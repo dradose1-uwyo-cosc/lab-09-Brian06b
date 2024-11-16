@@ -1,8 +1,8 @@
-# Your Name Here
+# Brian Barrios Montiel
 # UWYO COSC 1010
-# Submission Date
-# Lab XX
-# Lab Section:
+# 11/12/24
+# Lab 09
+# Lab Section:11
 # Sources, people worked with, help given to:
 # Your
 # Comments
@@ -80,26 +80,75 @@
 # - AFTER the loop, print how many orders were placed.
 
 
-# Example output:
-"""
-Would you like to place an order? exit to exit
-yes
-Please enter the size of pizza, as a whole number. The smallest size is 10
-20
-What kind of sauce would you like?
-Leave blank for red sauce
-garlic
-Please enter the toppings you would like, leave blank when done
-pepperoni
-bacon
-
-You ordered a 20" pizza with garlic sauce and the following toppings:
-                                                                  cheese
-                                                                  pepperoni
-                                                                  bacon
-You ordered a 20" pizza for 12.0
-You had 3 topping(s) for $0.8999999999999999
-Your total price is $12.9
-
-Would you like to place an order? exit to exit
-"""
+class Pizza:
+    def __init__(self, size, sauce= "red"):
+        self.setSize(size)  
+        self.sauce = sauce 
+        self.toppings = ["cheese"]  
+    def setSize(self, size):      
+        if size < 10:
+            self.size = 10
+        else:
+            self.size = size
+    def getSize(self):
+        return self.size
+    def getSauce(self):
+        return self.sauce
+    def addToppings(self, *new_toppings):     
+        self.toppings.extend(new_toppings)
+    def getToppings(self):
+        return self.toppings
+    def getAmountOfToppings(self):
+        return len(self.toppings) - 1 
+class Pizzeria:    
+    price_per_topping = 0.30
+    price_per_inch = 0.60
+    def __init__(self):
+        self.orders = 0
+        self.pizzas = []
+    def placeOrder(self):      
+        self.orders += 1               
+        while True:
+            try:
+                size = int(input("Enter the size of your pizza, as a whole number. The smallest size is 10 : "))
+                break
+            except ValueError:
+                print("Invalid input.")   
+        sauce = input("What kind of sauce would you like? Leave blank for red sauce: ")
+        if sauce == "":
+            sauce = "red"     
+        toppings = []
+        print("Please enter the toppings you would like, leave blank when done.")
+        while True:
+            topping = input()
+            if topping == "":
+                break
+            toppings.append(topping)       
+        pizza = Pizza(size, sauce)
+        pizza.addToppings(*toppings)
+        self.pizzas.append(pizza)       
+        self.getReceipt()
+    def getPrice(self):       
+        pizza = self.pizzas[-1]        
+        size_price = pizza.getSize() * self.price_per_inch
+        topping_price = pizza.getAmountOfToppings() * self.price_per_topping
+        total_price = size_price + topping_price
+        return size_price, topping_price, total_price
+    def getReceipt(self):
+        pizza = self.pizzas[-1]       
+        size_price, topping_price, total_price = self.getPrice()       
+        print(f"\nYou ordered a {pizza.getSize()}\" pizza with {pizza.getSauce()} sauce and the following toppings:")
+        print(" ".join(pizza.getToppings()))
+        print(f"You ordered a {pizza.getSize()}\" pizza for ${size_price:.2f}")
+        print(f"You had {pizza.getAmountOfToppings()} topping(s) for ${topping_price:.2f}")
+        print(f"Your total price is ${total_price:.2f}\n")
+    def NumberOfOrders(self):
+        return self.orders
+pizzeria = Pizzeria()
+while True:
+    order = input("Would you like to place an order? Type 'no' to exit: ").strip().lower()
+    if order == 'no':
+        break
+    elif order == 'yes':
+        pizzeria.placeOrder()
+print(f"\nTotal orders placed: {pizzeria.NumberOfOrders()}")
